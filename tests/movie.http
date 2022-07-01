@@ -2,8 +2,8 @@ POST http://localhost:5000/movies/
 Content-Type: application/json
 
 {
-  "title": "очень странные дела 4",
-  "description": "абар коадыор",
+  "title": "очень странные дела 7",
+  "description": "абар",
   "trailer": "trailer",
   "year": 2022,
   "rating": 1,
@@ -13,22 +13,22 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5000/movies/3
+GET http://localhost:5000/movies/29
 Accept: application/json
 
 ###
 
-GET http://localhost:5000/movies/?genre_id=4
+GET http://localhost:5000/movies/?director=1
 Accept: application/json
 
 ###
 
-PUT http://localhost:5000/movies/28
+PATCH http://localhost:5000/movies/29
 Accept: application/json
 Content-Type: application/json
 
 {
-  "title": "Новый фильм",
+  "title": "QWERTY",
   "description": "тест фильтм",
   "trailer": "trailer",
   "year": 1222,
@@ -38,12 +38,12 @@ Content-Type: application/json
 }
 ###
 
-DELETE http://localhost:5000/movies/28
+DELETE http://localhost:5000/movies/29
 Accept: application/json
 
 ###
 
-PATCH http://localhost:5000/movies/27
+PATCH http://localhost:5000/movies/29
 Accept: application/json
 Content-Type: application/json
 

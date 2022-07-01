@@ -9,17 +9,10 @@ movie_ns = Namespace('movies')
 
 @movie_ns.route('/')
 class MoviesView(Resource):
+    schema = MovieSchema(many=True)
 
     def get(self):
-        schema = MovieSchema(many=True)
-
-        director_id = request.args.get('director_id')
-        genre_id = request.args.get('genre_id')
-        year = request.args.get('year')
-        if genre_id:
-            return schema.dump(movie_service.filter_by_genre(genre_id)), 200
-
-        movies = schema.dump(movie_service.get_movies())
+        movies = self.schema.dump(movie_service.get_movies(**request.args))
         return movies, 200
 
     def post(self):
@@ -32,18 +25,17 @@ class MoviesView(Resource):
 
 @movie_ns.route('/<int:movie_id>')
 class MovieView(Resource):
-    def get(self, movie_id: int):
-        schema = MovieSchema()
+    schema = MovieSchema()
 
-        return schema.dump(movie_service.get_movies(movie_id))
+    def get(self, movie_id: int):
+        return self.schema.dump(movie_service.get_movies(movie_id)), 200
 
     def patch(self, movie_id: int):
-        return movie_service.update_movie_partial(movie_id, request.json)
+        return self.schema.dump(movie_service.update_movie_partial(movie_id, request.json)), 200
 
     def put(self, movie_id):
-        return movie_service.update_movie_full(movie_id, request.json)
+        return self.schema.dump(movie_service.update_movie_full(movie_id, request.json)), 200
 
     def delete(self, movie_id):
         movie_service.delete(movie_id)
         return '', 204
-
