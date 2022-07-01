@@ -1,5 +1,3 @@
-from dao.model.genres import Genre
-from dao.model.directors import Director
 from dao.model.movies import Movie
 
 
