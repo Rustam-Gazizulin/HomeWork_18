@@ -1,4 +1,8 @@
+from flask import request, make_response
 from flask_restx import Resource, Namespace
+
+from dao.model.movies import MovieSchema
+from implemented import movie_service
 
 movie_ns = Namespace('movies')
 
@@ -7,88 +11,39 @@ movie_ns = Namespace('movies')
 class MoviesView(Resource):
 
     def get(self):
-        movie_genre_and_director = db.session.query(Movie.id, Movie.title, Movie.description, Movie.rating,
-                                                    Movie.trailer,
-                                                    Genre.name.label('genre'),
-                                                    Director.name.label('director')).join(Genre).join(Director)
+        schema = MovieSchema(many=True)
 
         director_id = request.args.get('director_id')
         genre_id = request.args.get('genre_id')
-        if director_id:
-            movie_genre_and_director = movie_genre_and_director.filter(Movie.director_id == director_id)
+        year = request.args.get('year')
         if genre_id:
-            movie_genre_and_director = movie_genre_and_director.filter(Movie.genre_id == genre_id)
+            return schema.dump(movie_service.filter_by_genre(genre_id)), 200
 
-        all_movies = movie_genre_and_director.all()
-
-        return movies_schema.dump(all_movies), 200
+        movies = schema.dump(movie_service.get_movies())
+        return movies, 200
 
     def post(self):
-        req_json = request.json
-        new_movie = Movie(**req_json)
-        with db.session.begin():
-            db.session.add(new_movie)
-        return f'Новый объект с id {new_movie.id} создан', 201
+        new_movie = movie_service.create_movie(request.json)
+
+        resp = make_response('', 201)
+        resp.headers['location'] = f"{movie_ns.path}/{new_movie.id}"
+        return resp
 
 
-@movie_ns.route('/<int:uid>')
+@movie_ns.route('/<int:movie_id>')
 class MovieView(Resource):
-    def get(self, uid: int):
-        movie = db.session.query(Movie.id, Movie.title, Movie.description, Movie.rating, Movie.trailer,
-                                 Genre.name.label('genre'),
-                                 Director.name.label('director')).join(Genre).join(Director).filter(
-            Movie.id == uid).first()
-        if movie:
-            return movie_schema.dump(movie)
-        return "File not found", 404
+    def get(self, movie_id: int):
+        schema = MovieSchema()
 
-    def patch(self, uid: int):
-        movie = db.session.query(Movie).get(uid)
-        if not movie:
-            return "File not found", 404
+        return schema.dump(movie_service.get_movies(movie_id))
 
-        req_json = request.json
-        if 'title' in req_json:
-            movie.title = req_json['title']
-        elif 'description' in req_json:
-            movie.description = req_json['description']
-        elif 'trailer' in req_json:
-            movie.trailer = req_json['trailer']
-        elif 'year' in req_json:
-            movie.year = req_json['year']
-        elif 'rating' in req_json:
-            movie.rating = req_json['rating']
-        elif 'genre_id' in req_json:
-            movie.genre_id = req_json['genre_id']
-        elif 'director_id' in req_json:
-            movie.director_id = req_json['director_id']
-        db.session.add(movie)
-        db.session.commit()
-        return f'Объект с id {movie.id} обновлен', 204
+    def patch(self, movie_id: int):
+        return movie_service.update_movie_partial(movie_id, request.json)
 
-    def put(self, uid: int):
-        movie = db.session.query(Movie).get(uid)
-        if not movie:
-            return "File not found", 404
+    def put(self, movie_id):
+        return movie_service.update_movie_full(movie_id, request.json)
 
-        req_json = request.json
+    def delete(self, movie_id):
+        movie_service.delete(movie_id)
+        return '', 204
 
-        movie.title = req_json['title']
-        movie.description = req_json['description']
-        movie.trailer = req_json['trailer']
-        movie.year = req_json['year']
-        movie.rating = req_json['rating']
-        movie.genre_id = req_json['genre_id']
-        movie.director_id = req_json['director_id']
-
-        db.session.add(movie)
-        db.session.commit()
-        return f'Объект с id {movie.id} обновлен', 204
-
-    def delete(self, uid: int):
-        movie = db.session.query(Movie).get(uid)
-        if not movie:
-            return "File not found", 404
-        db.session.delete(movie)
-        db.session.commit()
-        return f'Объект с id {movie.id} удален', 204
