@@ -6,7 +6,7 @@ director_ns = Namespace('directors')
 
 
 @director_ns.route('/')
-class DirectorsViews(Resource):
+class DirectorsView(Resource):
     schema = DirectorSchema(many=True)
 
     def get(self):
@@ -14,7 +14,7 @@ class DirectorsViews(Resource):
 
 
 @director_ns.route('/<int:did>')
-class DirectorViews(Resource):
+class DirectorView(Resource):
     schema = DirectorSchema()
 
     def get(self, did):

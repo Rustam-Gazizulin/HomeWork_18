@@ -21,7 +21,6 @@ class MovieService:
         movie.rating = data['rating']
         movie.genre_id = data['genre_id']
         movie.director_id = data['director_id']
-
         self.dao.update(movie)
         return movie
 
@@ -48,13 +47,3 @@ class MovieService:
     def delete(self, movie_id):
         self.dao.delete(movie_id)
 
-    def filter_by_genre(self, genre_id):
-        movies = self.get_movies()
-        result = []
-        for movie in movies:
-            if movie.genre_id == int(genre_id):
-                result.append(movie)
-        return result
-
-    def filter(self, **filter_params):
-        pass

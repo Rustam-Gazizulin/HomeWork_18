@@ -6,7 +6,7 @@ genre_ns = Namespace('genres')
 
 
 @genre_ns.route('/')
-class GenresViews(Resource):
+class GenresView(Resource):
     schema = GenreSchema(many=True)
 
     def get(self):
@@ -14,7 +14,7 @@ class GenresViews(Resource):
 
 
 @genre_ns.route('/<int:gid>')
-class GenreViews(Resource):
+class GenreView(Resource):
     schema = GenreSchema()
 
     def get(self, gid):

@@ -2,6 +2,7 @@ POST http://localhost:5000/movies/
 Content-Type: application/json
 
 {
+  "id": 1,
   "title": "очень странные дела 7",
   "description": "абар",
   "trailer": "trailer",
@@ -13,7 +14,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5000/movies/29
+GET http://localhost:5000/movies/
 Accept: application/json
 
 ###

@@ -3,6 +3,11 @@ from marshmallow import Schema, fields
 from setup_db import db
 
 
+class DirectorSchema(Schema):
+    id = fields.Int()
+    name = fields.Str()
+
+
 class Director(db.Model):
     __tablename__ = 'director'
     id = db.Column(db.Integer, primary_key=True)
@@ -10,8 +15,3 @@ class Director(db.Model):
 
     def __str__(self):
         return self.name
-
-
-class DirectorSchema(Schema):
-    id = fields.Int()
-    name = fields.Str()
