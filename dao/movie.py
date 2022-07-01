@@ -9,13 +9,14 @@ class MovieDAO:
 
     def get(self, mid=None, **kwargs):
         query = self.session.query(Movie)
+
+        if mid:
+            return query.get(mid)
+
         if kwargs:
             for key, value in kwargs.items():
                 query = query.filter(eval(f"Movie.{key}") == int(value))
-        if mid:
-            return query.get(mid)
-        else:
-            return query.all()
+        return query.all()
 
     def create(self, data):
         new_movie = Movie(**data)
